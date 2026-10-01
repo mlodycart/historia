@@ -111,14 +111,15 @@
 
     <script src="historyData.js"></script>
     <script>
-        function buildTable() {
-            document.getElementById('table-body').innerHTML = historyData.map((w, idx) => `
-                <tr id="row-word-${idx}">
-                    <td><strong>${w.title}</strong></td>
-                    <td>${w.desc}</td>
-                </tr>
-            `).join('');
-        }
+   function buildTable() {
+    console.log("Dane z historyData:", historyData); // Sprawdź w konsoli (F12), co tutaj się pojawia!
+    document.getElementById('table-body').innerHTML = historyData.map((w, idx) => `
+        <tr id="row-word-${idx}">
+            <td><strong>${w.title}</strong></td>
+            <td>${w.desc}</td>
+        </tr>
+    `).join('');
+}
 
         function toggleClearButton() {
             const input = document.getElementById("table-search-input");
