@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia - Sprawdzian XIX w. | Strona Główna</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            background-color: #121212; 
+            color: #fff; 
+            font-family: 'Space Grotesk', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            padding: 20px;
+        }
+        h1 { 
+            color: #4CAF50; 
+            font-size: 42px; 
+            margin-bottom: 10px; 
+        }
+        p {
+            color: #aaa;
+            font-size: 20px;
+            margin-bottom: 40px;
+        }
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        .menu-btn {
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 3px solid #444;
+            padding: 20px 40px;
+            font-family: inherit;
+            font-size: 22px;
+            font-weight: 700;
+            border-radius: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+        .menu-btn:hover {
+            transform: scale(1.08);
+            background-color: #2a2a2a;
+            border-color: #ffd700;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Historia XIX wieku</h1>
+        <p>Wybierz sekcję, z której chcesz skorzystać, aby przygotować się do sprawdzianu.</p>
+        
+        <div class="menu-buttons">
+            <a href="tabelka.html" class="menu-btn">Tabela Baza Wiedzy</a>
+            <a href="quiz_wpisywany.html" class="menu-btn">Quiz: Wpisywanie (Słowa Kluczowe)</a>
+            <a href="quiz_abcd.html" class="menu-btn">Quiz: Wybór (ABCD)</a>
+        </div>
+    </div>
+
+</body>
+</html>
