@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historia - Tabela Baza Wiedzy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        html { scrollbar-gutter: stable; overflow-y: scroll; }
+        body { background-color: #121212; color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 500; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .back-nav { width: 100%; max-width: 1350px; padding: 20px 20px 0 20px; display: flex; justify-content: flex-start; }
+        .back-btn { background-color: #2a2a2a; color: #ffd700; border: 2px solid #444; padding: 10px 20px; font-family: inherit; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; text-decoration: none; transition: background-color 0.2s; }
+        .back-btn:hover { background-color: #3d3d3d; }
+
+        .tab-content { display: block; width: 100%; max-width: 1350px; padding: 20px 20px 80px 20px; }
+        
+        .table-header-bar { 
+            position: sticky; 
+            top: 20px; 
+            z-index: 1000; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 20px; 
+            margin-bottom: 25px; 
+            background-color: #1a1a1a; 
+            padding: 24px 32px; 
+            border-radius: 16px; 
+            border: 1px solid #333; 
+            flex-wrap: wrap; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        
+        .zoom-controls { display: flex; align-items: center; gap: 14px; }
+        .zoom-controls span { font-size: 22px; color: #aaa; font-weight: 700; }
+        
+        .zoom-btn { 
+            background-color: #262626; color: white; border: 2px solid #444; 
+            width: 56px; height: 56px; font-size: 26px; font-weight: 700; 
+            border-radius: 12px; cursor: pointer; touch-action: manipulation; 
+            display: inline-flex; align-items: center; justify-content: center; 
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s; padding: 0; box-sizing: border-box;
+            text-decoration: none;
+        }
+        .zoom-btn:hover { border-color: #ffd700; background-color: #333333; color: #ffd700; }
+        #zoom-level-text { font-size: 22px; color: #ffd700; min-width: 75px; text-align: center; font-weight: 700; }
+        
+        .search-box { position: relative; display: flex; align-items: center; flex-grow: 1; max-width: 500px; height: 56px; }
+        .search-input { width: 100%; height: 56px; padding: 0 58px 0 20px; font-family: inherit; font-size: 20px; border: 2px solid #444; border-radius: 12px; background-color: #262626; color: white; outline: none; box-sizing: border-box; }
+        .search-input:focus { border-color: #ffd700; }
+        
+        .clear-search-btn {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #ffd700; cursor: pointer; display: none; align-items: center; justify-content: center; padding: 4px; font-size: 30px; font-weight: 900; line-height: 1;
+        }
+        
+        .table-responsive { width: 100%; overflow-x: auto; border-radius: 12px; }
+        #table-zoom-wrapper { transform-origin: top left; transition: transform 0.1s ease-out; width: 100%; }
+        
+        table { width: 100%; border-collapse: collapse; background-color: #1a1a1a; border-radius: 12px; overflow: hidden; font-size: 18px; min-width: 600px; table-layout: fixed; }
+        th, td { padding: 18px 20px; text-align: left; border-bottom: 1px solid #2a2a2a; word-wrap: break-word; }
+        th { background-color: #0d0d0d; font-weight: 700; font-size: 20px; border-bottom: 2px solid #444; color: #ffd700; }
+        tr:nth-child(even) { background-color: #242424; }
+        tr.highlighted-row { background-color: #ffd700 !important; color: #000 !important; font-weight: bold; }
+        tr.highlighted-row td { color: #000 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="back-nav">
+        <a href="index.html" class="back-btn">&#8592; Strona główna</a>
+    </div>
+
+    <div class="tab-content">
+        <div class="table-header-bar">
+            <div class="zoom-controls">
+                <span>Rozmiar:</span>
+                <button class="zoom-btn" onclick="adjustZoom(-0.1)">-</button>
+                <span id="zoom-level-text">100%</span>
+                <button class="zoom-btn" onclick="adjustZoom(0.1)">+</button>
+                <button class="zoom-btn" onclick="resetZoom()" title="Resetuj zoom">
+                    <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+            </div>
+            <form class="search-box" action="javascript:void(0);" onsubmit="searchTable(); return false;">
+                <input type="search" id="table-search-input" class="search-input" placeholder="Szukaj (np. wojna krymska...)" autocomplete="off" oninput="toggleClearButton()">
+                <button type="button" id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()" title="Wyczyść">&#10005;</button>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <div id="table-zoom-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Zagadnienie</th>
+                            <th style="width: 70%;">Opis i kluczowe fakty</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="historyData.js"></script>
+    <script>
+        function buildTable() {
+            document.getElementById('table-body').innerHTML = historyData.map((w, idx) => `
+                <tr id="row-word-${idx}">
+                    <td><strong>${w.title}</strong></td>
+                    <td>${w.desc}</td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleClearButton() {
+            const input = document.getElementById("table-search-input");
+            const clearBtn = document.getElementById("clear-search-btn");
+            clearBtn.style.display = input.value.length > 0 ? "flex" : "none";
+        }
+
+        function clearSearch() {
+            const input = document.getElementById("table-search-input");
+            input.value = "";
+            toggleClearButton();
+            document.querySelectorAll("#table-body tr").forEach(tr => tr.classList.remove("highlighted-row"));
+            input.focus();
+        }
+
+        function searchTable() {
+            const queryRaw = document.getElementById("table-search-input").value.trim().toLowerCase();
+            document.querySelectorAll("#table-body tr").forEach(tr => tr.classList.remove("highlighted-row"));
+            if (!queryRaw) return;
+
+            const queryWords = queryRaw.split(/\s+/).filter(w => w.length > 0);
+            let matchingIndexes = [];
+            
+            historyData.forEach((w, idx) => {
+                const combinedText = [w.title, w.desc, ...(w.titleKeywords || []), ...(w.descKeywords || [])].join(" ").toLowerCase();
+                if (combinedText.includes(queryRaw) || queryWords.every(qw => combinedText.includes(qw))) {
+                    matchingIndexes.push(idx);
+                }
+            });
+
+            if (matchingIndexes.length >= 1) {
+                const row = document.getElementById(`row-word-${matchingIndexes[0]}`);
+                if (row) {
+                    row.classList.add("highlighted-row");
+                    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            document.getElementById("table-search-input").blur();
+        }
+
+        let currentZoom = parseFloat(localStorage.getItem('tableZoom')) || 1.0;
+        function updateZoomDisplay() {
+            const wrapper = document.getElementById('table-zoom-wrapper');
+            const zoomText = document.getElementById('zoom-level-text');
+            if (wrapper && zoomText) {
+                wrapper.style.transform = `scale(${currentZoom})`;
+                wrapper.style.width = `${100 / currentZoom}%`;
+                zoomText.innerText = `${Math.round(currentZoom * 100)}%`;
+                localStorage.setItem('tableZoom', currentZoom);
+            }
+        }
+        function adjustZoom(delta) { currentZoom = Math.min(Math.max(0.4, currentZoom + delta), 1.5); updateZoomDisplay(); }
+        function resetZoom() { currentZoom = 1.0; updateZoomDisplay(); }
+
+        window.onload = function() {
+            buildTable();
+            updateZoomDisplay();
+        };
+    </script>
+</body>
+</html>
